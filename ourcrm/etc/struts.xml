@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+		<constant name="struts.convention.default.parent.package"
+                value="crud-default" />
+      <!--   一定要继承自convention-default -->
+        <package name="crud-default" extends="convention-default" namespace="/">
+                <interceptors>
+                 <!--    你的拦截器 -->
+                        <interceptor name="checklogin" class="com.kaishengit.interceptor.LoginInterceptor"></interceptor>
+                        
+
+                    <!--     基于paramsPrepareParamsStack, 增加store interceptor保证actionMessage在redirect后不会丢失 -->
+                        <interceptor-stack name="crudStack">
+                                <interceptor-ref name="store">
+                                        <param name="operationMode">AUTOMATIC</param>
+                                </interceptor-ref>
+                                <interceptor-ref name="paramsPrepareParamsStack" />
+                             <!--    在拦截器栈里引入你所加的拦截器 -->
+                                <interceptor-ref name="checklogin">
+                                        <param name="loginUser">user</param>
+                                        <param name="exclude">tiaozhuan,user,reguser,saveuser,searchgroup,searchusername</param>
+                                       
+                                </interceptor-ref>
+                        </interceptor-stack>
+
+                </interceptors>
+                <default-interceptor-ref name="crudStack" />
+
+               <global-results>
+	             <result name="login" type="redirectAction">
+	             		<param name="actionName">tiaozhuan</param>
+	             		<param name="namespace">/</param>
+	             </result>     
+	    	</global-results>
+	    		    	
+		</package>
+		
+		<package name="downloadpackage" namespace="/contact" extends="struts-default">
+			<action name="download" class="com.kaishengit.action.DownloadAction">
+			<result type="stream">
+				<param name="contentType">application/msexcel</param>				
+				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="inputName">file</param>
+				<param name="bufferSize">1024</param>
+				<param name="allowCaching">true</param>
+				<param name="contentCharSet">UTF-8</param>
+			</result>
+		</action>
+		
+		</package>
+	 
+</struts>
